@@ -1,0 +1,4 @@
+更新说明：
+1、增加LogTrack日志的添加功能
+2、增加数据库表LogTrack
+3、LogTrack增加GUID列

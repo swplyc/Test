@@ -1,0 +1,1 @@
+﻿var host = "http://ebook.volvo.wedochina.cn";

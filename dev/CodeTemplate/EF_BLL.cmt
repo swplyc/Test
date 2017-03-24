@@ -1,0 +1,107 @@
+﻿<#@ template language="c#" HostSpecific="True" #>
+<#@ output extension= ".cs" #>
+<#
+	TableHost host = (TableHost)(Host);
+	host.Fieldlist.Sort(CodeCommon.CompareByintOrder);
+#>
+/**
+* <#= host.GetModelClass(host.TableName) #>.cs
+*
+* 功 能： N/A
+* 类 名： <#= host.GetModelClass(host.TableName) #>
+*
+* Ver    变更日期             负责人  变更内容
+* ───────────────────────────────────
+* V0.01  2015/11/13 15:34:00   N/A    初版
+*
+* Copyright (c) 2015 AOWEN Corporation. All rights reserved.
+*┌──────────────────────────────────┐
+*│　此技术信息为本公司机密信息，未经本公司书面同意禁止向第三方披露．　│
+*│　版权所有：上海傲文网络技术有限公司　　　　　　　　　　　　　　│
+*└──────────────────────────────────┘
+*/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Data;
+using System.Data.SqlClient;
+using AOWEN.DAL;
+using AOWEN.Model;
+
+namespace <#= host.NameSpace #>.BLL<# if( host.Folder.Length > 0) {#>.<#= host.Folder #><# } #>
+
+{       
+	<# if( host.TableDescription.Length > 0) {#>
+ 	//<#= host.TableDescription #>
+	<# } #>
+public class <#= host.GetModelClass(host.TableName) #>Man
+	{
+	    private string dbContextType = "";
+        private CustomDbContext _db = null;
+        /// <summary>
+        /// 构造函数,同一线程中使用相同的DBContext
+        /// </summary>
+        public <#= host.GetModelClass(host.TableName) #>Man()
+        {
+
+        }
+
+        /// <summary>
+        /// 构造函数
+        /// 如果要在当前实例中使用同一个DBContext,则使用带名称的DBContext
+        /// </summary>
+        /// <param name="contextName">上下文名称</param>
+        public <#= host.GetModelClass(host.TableName) #>Man(string contextName)
+        {
+            dbContextType = "new";
+        }
+        
+        private CustomDbContext db
+        {
+            get
+            {
+                if (dbContextType != "")
+                {
+                    //同一实例使用同一个DBContext;
+                    if (_db == null)
+                    {
+                        _db = CustomDbContext.InstanceNew;
+                    }
+
+                    return _db;
+                }
+                else
+                {
+                    return CustomDbContext.Instance;
+                }
+            }
+        }
+
+        public void Add(<#= host.GetModelClass(host.TableName) #> entity)
+        {
+            db.<#= host.GetModelClass(host.TableName) #>s.Add(entity);
+            db.SaveChanges();
+        }
+        public void Update(<#= host.GetModelClass(host.TableName) #> entity)
+        {
+            db.Entry(entity).State = System.Data.Entity.EntityState.Modified;
+            db.SaveChanges();
+        }
+        public void Delete(<#= host.GetModelClass(host.TableName) #> entity)
+        {
+            db.Entry(entity).State = System.Data.Entity.EntityState.Deleted;
+            db.SaveChanges();
+        }
+        public void Delete(int id)
+        {
+            <#= host.GetModelClass(host.TableName) #> entity = this.GetEntity(id);
+            db.Entry(entity).State = System.Data.Entity.EntityState.Deleted;
+            db.SaveChanges();
+        }
+        public <#= host.GetModelClass(host.TableName) #> GetEntity(int id)
+        {    
+             return db.<#= host.GetModelClass(host.TableName) #>s.Find(id);
+        }  
+	}
+}

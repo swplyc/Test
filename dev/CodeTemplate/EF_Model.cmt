@@ -1,0 +1,68 @@
+﻿<#@ template language="c#" HostSpecific="True" #>
+<#@ output extension= ".cs" #>
+<#
+	TableHost host = (TableHost)(Host);
+	host.Fieldlist.Sort(CodeCommon.CompareByintOrder);
+	ColumnInfo primaryKey=new ColumnInfo();
+	if(host.Keys.Count>0){
+		primaryKey=host.Keys[0];
+	}
+	ColumnInfo identityKey=host.IdentityKey;
+#>
+/**
+* <#= host.GetModelClass(host.TableName) #>.cs
+*
+* 功 能： N/A
+* 类 名： <#= host.GetModelClass(host.TableName) #>
+*
+* Ver    变更日期             负责人  变更内容
+* ───────────────────────────────────
+* V0.01  2015/11/13 15:34:00   N/A    初版
+*
+* Copyright (c) 2015 AOWEN Corporation. All rights reserved.
+*┌──────────────────────────────────┐
+*│　此技术信息为本公司机密信息，未经本公司书面同意禁止向第三方披露．　│
+*│　版权所有：上海傲文网络技术有限公司　　　　　　　　　　　　　　│
+*└──────────────────────────────────┘
+*/
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.Generic;
+
+namespace <#= host.NameSpace #>.Model<# if( host.Folder.Length > 0) {#>.<#= host.Folder #><# } #>
+
+{
+<# if( host.TableDescription.Length > 0) {#>
+	/// <summary>
+    /// <#= host.TableDescription #>
+    /// </summary>
+<# } #>
+    [Serializable]
+    [Table("<#= host.GetModelClass(host.TableName) #>")]
+	public class <#= host.GetModelClass(host.TableName) #>
+	{
+		#region Model
+<# foreach (ColumnInfo c in host.Fieldlist)
+{ #>
+		private <#= CodeCommon.DbTypeToCS(c.TypeName) #><#= c.Nullable ? "?" :"" #> _<#= c.ColumnName.ToString().ToLower() #><#= c.Nullable ? "" : (string.IsNullOrEmpty(c.DefaultVal)? "" : " = " + (c.TypeName == "bit"?(c.DefaultVal=="1" ? "true" : " false") : CodeCommon.DbTypeToCS(c.DefaultVal).Replace("getdate","DateTime.Now").Replace("\'","\""))) #>;  
+<# } #>
+		
+		<# foreach (ColumnInfo c in host.Fieldlist)
+		{ #>/// <summary>
+		/// <#= string.IsNullOrEmpty(c.Description) ? c.ColumnName : c.Description #>
+		/// </summary>	
+	<# if(c.TypeName=="nvarchar") {#>[MaxLength(<#= c.Length=="0" ? "2147483647" : c.Length #>, ErrorMessage = "字符长度超过<#= c.Length=="0" ? "2147483647" : c.Length #>")]<#}#> 
+    <# if(primaryKey!=null && primaryKey.ColumnName==c.ColumnName){#>
+    [Key<#= identityKey==null ? "" : ", DatabaseGenerated(DatabaseGeneratedOption.Identity)" #>]
+    <#}#>
+      public <#= CodeCommon.DbTypeToCS(c.TypeName) #><#= c.Nullable ? "?" :"" #> <#= c.ColumnName #>
+        {
+            get{ return _<#= c.ColumnName.ToString().ToLower()#>; }
+            set{ _<#= c.ColumnName.ToString().ToLower() #> = value; }
+        }    
+        
+		<# } #>
+#endregion
+	}
+}

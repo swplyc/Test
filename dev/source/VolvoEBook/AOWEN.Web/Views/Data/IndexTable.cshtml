@@ -1,0 +1,43 @@
+﻿@using AOWEN.Model;
+@using AOWEN.BLL;
+@{
+    List<CollectData> datas = ViewBag.table;
+}
+
+<style type="text/css">
+    .noexport { max-width: 30px; color: red; font-size: 20px; }
+</style>
+<div class="backtable1-box">
+    <table class="backtable1-Informationlist">
+        <thead>
+            <tr>
+                <th style="max-width: 30px"></th>
+                <th>果园</th>
+                <th>采集器</th>
+                <th>传感器</th>
+                <th>数值</th>
+                <th style="min-width: 130px">数据提交时间</th>
+
+            </tr>
+        </thead>
+        @foreach (var data in datas)
+        {
+          
+            <tr>
+
+                <td style="max-width: 30px"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td style="min-width: 130px"></td>
+            </tr>
+        }
+    </table>
+
+
+
+</div>
+
+<div>@RenderPage("/views/shared/PageViewasyn.cshtml")</div>
+
+
